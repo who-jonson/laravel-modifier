@@ -7,13 +7,8 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Console\GeneratorCommand;
 
-class MakeRepository extends GeneratorCommand
+class RepositoryClassMake extends GeneratorCommand
 {
-    /**
-     * @var Config
-     */
-    protected $config;
-
     /**
      * The console command name.
      *
@@ -36,15 +31,19 @@ class MakeRepository extends GeneratorCommand
     protected $type = 'Repository';
 
     /**
-     *
-     * @param Filesystem $files
-     * @param Config $config
+     * @var Config
      */
-    public function __construct(Filesystem $files, Config $config)
-    {
-        parent::__construct($files);
+    protected Config $config;
 
+    /**
+     *
+     * @param Config $config
+     * @param Filesystem $files
+     */
+    public function __construct(Config $config, Filesystem $files)
+    {
         $this->config = $config;
+        parent::__construct($files);
     }
 
     /**

@@ -7,23 +7,22 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\ModelMakeCommand;
 
-class MakeModel extends ModelMakeCommand
+class ModelMake extends ModelMakeCommand
 {
     /**
      * @var Config
      */
-    protected $config;
+    protected Config $config;
 
     /**
      *
-     * @param Filesystem $files
      * @param Config $config
+     * @param Filesystem $files
      */
-    public function __construct(Filesystem $files, Config $config)
+    public function __construct(Config $config, Filesystem $files)
     {
-        parent::__construct($files);
-
         $this->config = $config;
+        parent::__construct($files);
     }
 
     /**

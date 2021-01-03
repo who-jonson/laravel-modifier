@@ -11,8 +11,10 @@
 
 namespace WhoJonson\LaravelOrganizer;
 
-use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Support\DeferrableProvider;
+use WhoJonson\LaravelOrganizer\Console\Commands\ModelMake;
+use WhoJonson\LaravelOrganizer\Console\Commands\RepositoryMake;
 
 class LaravelOrganizerServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -40,8 +42,16 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
      */
     public function register() : void
     {
-        $configPath = __DIR__ . '/../config/laravel-organizer.php';
-        $this->mergeConfigFrom($configPath, 'laravel-organizer');
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/laravel-organizer.php', 'laravel-organizer'
+        );
+
+        $this->bindServices();
+
+        $this->commands([
+            'command.make.model',
+            'command.make.repository'
+        ]);
     }
 
     /**
@@ -49,8 +59,33 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
      *
      * @return array
      */
-    public function provides(): array
+    public function provides() : array
     {
-        return ['command.make.model'];
+        return [
+            'command.make.model',
+            'command.make.repository'
+        ];
+    }
+
+    /**
+     * Bind service classes provided by the provider.
+     *
+     * @return void
+     */
+    private function bindServices() : void
+    {
+        $this->app->singleton(
+            'command.make.model',
+            function ($app) {
+                return new ModelMake($app['config'], $app['files']);
+            }
+        );
+
+        $this->app->singleton(
+            'command.make.repository',
+            function ($app) {
+                return new RepositoryMake($app['config'], $app['files']);
+            }
+        );
     }
 }
