@@ -1,8 +1,7 @@
 <?php
 
 
-namespace WhoJonson\LaravelOrganizer\Repositories\BaseRepository;
-
+namespace WhoJonson\LaravelOrganizer\Repositories;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +13,7 @@ abstract class Repository implements RepositoryInterface
     /**
      * @var Model|null
      */
-    protected ?Model $model;
+    protected $model;
 
     public function __construct(?Model $model)
     {

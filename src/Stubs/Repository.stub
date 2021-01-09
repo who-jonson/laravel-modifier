@@ -1,0 +1,13 @@
+<?php
+
+namespace DummyNamespace;
+
+use WhoJonson\LaravelOrganizer\Repositories\Repository;
+
+class DummyClass extends Repository implements  {
+
+
+    public function __construct() {
+
+    }
+}

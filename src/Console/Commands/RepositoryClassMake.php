@@ -14,7 +14,7 @@ class RepositoryClassMake extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'make:repository';
+    protected $name = 'make:repository-class';
 
     /**
      * The console command description.
@@ -33,7 +33,7 @@ class RepositoryClassMake extends GeneratorCommand
     /**
      * @var Config
      */
-    protected Config $config;
+    protected $config;
 
     /**
      *
@@ -55,9 +55,9 @@ class RepositoryClassMake extends GeneratorCommand
     protected function getDefaultNamespace($rootNamespace): string
     {
         $namespace = $this->config->get('laravel-organizer.directories.repository', 'Repositories');
-        if($ns = $this->option('ns')) {
+        /*if($ns = $this->option('ns')) {
             $namespace = $ns;
-        }
+        }*/
         return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}");
     }
 

@@ -3,7 +3,7 @@
     "description": "A customizer for modifying Laravel structure",
     "keywords": ["php", "laravel", "custom laravel", "cli", "artisan", "command", "composer-package", "console"],
     "homepage": "https://github.com/who-jonson/laravel-organizer",
-    "type": "library",
+    "type": "package",
     "license": "MIT",
     "require": {
         "php": "^7.2 || ^8.0",

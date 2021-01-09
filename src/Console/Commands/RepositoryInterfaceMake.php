@@ -12,21 +12,21 @@ class RepositoryInterfaceMake extends GeneratorCommand
     /**
      * @var Config
      */
-    protected Config $config;
+    protected $config;
 
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:repository';
+    protected $name = 'make:repository-interface';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new Repository class';
+    protected $description = 'Create a new Repository Interface';
 
     /**
      * The type of class being generated.
@@ -56,10 +56,7 @@ class RepositoryInterfaceMake extends GeneratorCommand
     protected function getDefaultNamespace($rootNamespace): string
     {
         $namespace = $this->config->get('laravel-organizer.directories.repository', 'Repositories');
-        if($ns = $this->option('ns')) {
-            $namespace = $ns;
-        }
-        return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}");
+        return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}\\Contracts");
     }
 
     /**

@@ -12,7 +12,7 @@ class ModelMake extends ModelMakeCommand
     /**
      * @var Config
      */
-    protected Config $config;
+    protected $config;
 
     /**
      *
