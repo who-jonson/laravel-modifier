@@ -3,10 +3,14 @@
 
 namespace WhoJonson\LaravelOrganizer\Console\Commands;
 
-use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\ModelMakeCommand;
+use Illuminate\Contracts\Config\Repository as Config;
 
+/**
+ * Class ModelMake
+ * @package WhoJonson\LaravelOrganizer\Console\Commands
+ */
 class ModelMake extends ModelMakeCommand
 {
     /**
@@ -15,11 +19,10 @@ class ModelMake extends ModelMakeCommand
     protected $config;
 
     /**
-     *
-     * @param Config $config
      * @param Filesystem $files
+     * @param Config $config
      */
-    public function __construct(Config $config, Filesystem $files)
+    public function __construct(Filesystem $files, Config $config)
     {
         $this->config = $config;
         parent::__construct($files);
@@ -34,9 +37,6 @@ class ModelMake extends ModelMakeCommand
     protected function getDefaultNamespace($rootNamespace): string
     {
         $namespace = $this->config->get('laravel-organizer.directories.model', 'Models');
-        if($ns = $this->option('ns')) {
-            $namespace = $ns;
-        }
         return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}");
     }
 

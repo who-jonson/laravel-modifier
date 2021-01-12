@@ -19,7 +19,7 @@ return [
          * example: to keep your Repositories in "app/Repositories" directory as Namespaced "App\Repositories"
          * then the value should be "Repositories"
          *
-         * OR to keep your Models in "app/Custom/Repositories" directory as Namespaced "App\Custom\Repositories"
+         * OR to keep your Repositories in "app/Custom/Repositories" directory as Namespaced "App\Custom\Repositories"
          * then the value should be "Custom\\Repositories"
          */
         'repository' => 'Repositories'

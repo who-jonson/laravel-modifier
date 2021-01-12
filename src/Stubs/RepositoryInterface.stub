@@ -2,10 +2,9 @@
 
 namespace DummyNamespace;
 
-class DummyClass {
+use WhoJonson\LaravelOrganizer\Contracts\Repository;
+
+interface DummyClass extends Repository {
 
 
-    public function __construct() {
-
-    }
 }

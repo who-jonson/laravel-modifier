@@ -1,12 +1,17 @@
 <?php
 
+
 namespace WhoJonson\LaravelOrganizer\Exceptions;
 
 
-use RuntimeException;
-
-
-class UndefinedModelException extends RuntimeException
+class UndefinedModelException extends LaravelOrganizerException
 {
 
+    /**
+     * UndefinedModelException constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct('Model not defined when the class initiated!');
+    }
 }

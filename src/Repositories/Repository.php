@@ -1,12 +1,12 @@
 <?php
 
-
 namespace WhoJonson\LaravelOrganizer\Repositories;
 
-use Illuminate\Database\Eloquent\Collection;
+use BadMethodCallException;
 use Illuminate\Database\Eloquent\Model;
-use WhoJonson\LaravelOrganizer\Contracts\Repository as RepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use WhoJonson\LaravelOrganizer\Exceptions\UndefinedModelException;
+use WhoJonson\LaravelOrganizer\Contracts\Repository as RepositoryInterface;
 
 abstract class Repository implements RepositoryInterface
 {
@@ -24,11 +24,9 @@ abstract class Repository implements RepositoryInterface
      * @param int|string|null $id
      *
      * @return Collection|Model[]|Model|null
-     *
      */
     public function get($id = null)
     {
-        $this->checkModel();
         return $id
             ? $this->model->find($id)
             : $this->model->all();
@@ -36,11 +34,11 @@ abstract class Repository implements RepositoryInterface
 
     /**
      * @param array $data
+     *
      * @return Model|null
      */
     public function create(array $data) : ?Model
     {
-        $this->checkModel();
         return $this->model->create($data);
     }
 
@@ -63,18 +61,18 @@ abstract class Repository implements RepositoryInterface
     /**
      * @param int|string $id
      *
-     * @return bool
+     * @return bool|string|null
      */
-    public function delete($id) : ?bool
+    public function delete($id)
     {
         $model = $this->get($id);
         if (!$model) {
-            return null;
+            return 'Requested resource not found!';
         }
         try {
             return $model->delete();
         } catch (\Exception $e) {
-            return null;
+            return 'Something went wrong!';
         }
     }
 
@@ -83,17 +81,32 @@ abstract class Repository implements RepositoryInterface
      */
     public function fillable() : array
     {
-        $this->checkModel();
         return $this->model->getFillable();
     }
 
     /**
-     * @return void
      * @throws UndefinedModelException
      */
     private function checkModel() {
         if(!$this->model) {
-            throw new UndefinedModelException('Model not defined on constructor!');
+            throw new UndefinedModelException();
+        }
+    }
+
+    /**
+     * @param $method
+     * @param $arguments
+     *
+     * @return bool
+     * @throws UndefinedModelException|BadMethodCallException
+     */
+    public function __call($method, $arguments) : bool
+    {
+        if(method_exists($this, $method)) {
+            $this->checkModel();
+            return call_user_func_array([$this, $method], $arguments);
+        } else {
+            throw new BadMethodCallException();
         }
     }
 

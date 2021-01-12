@@ -3,11 +3,17 @@
 namespace WhoJonson\LaravelOrganizer\Console\Commands;
 
 
-use Illuminate\Console\Command;
-use Illuminate\Contracts\Config\Repository as Config;
+use Exception;
 use Illuminate\Support\Str;
+use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Config\Repository as Config;
 use WhoJonson\LaravelOrganizer\LaravelOrganizer;
 
+/**
+ * Class RepositoryMake
+ * @package WhoJonson\LaravelOrganizer\Console\Commands
+ */
 class RepositoryMake extends Command
 {
     /**
@@ -15,7 +21,7 @@ class RepositoryMake extends Command
      *
      * @var string
      */
-    protected $name = 'make:repository {name}';
+    protected $signature = 'make:repository {name} {--model=}';
 
     /**
      * The console command description.
@@ -23,6 +29,11 @@ class RepositoryMake extends Command
      * @var string
      */
     protected $description = 'Generate a new Repository with Interface & Bind in AppServiceProvider';
+
+    /**
+     * @var Filesystem
+     */
+    protected $files;
 
     /**
      * @var Config
@@ -35,16 +46,18 @@ class RepositoryMake extends Command
     protected $organizer;
 
     /**
-     *
+     * @param Filesystem $files
      * @param Config $config
-     * @param LaravelOrganizer $organizer
+     *
+     * @throws Exception
      */
-    public function __construct(Config $config, LaravelOrganizer $organizer)
+    public function __construct(Filesystem $files, Config $config)
     {
         parent::__construct();
 
+        $this->files = $files;
         $this->config = $config;
-        $this->organizer = $organizer;
+        $this->organizer = new LaravelOrganizer($files, $config);
     }
 
     /**
@@ -56,27 +69,30 @@ class RepositoryMake extends Command
     {
         $repository = Str::studly($this->argument('name'));
 
-        $this->info('Creating: "' . $repository . '" Interface');
+        $this->line('Creating: "' . $repository . '" Interface');
         $this->call('make:repository-interface', [
             'name'  => $repository
         ]);
-        $this->line('Created: "' . $repository . '" Interface');
 
-        $this->info('Creating: "' . $repository . '" Class');
+        $this->line('Creating: "' . $repository . '" Class');
         $this->call('make:repository-class', [
-            'name'  => $repository
+            'name'      => $repository,
+            '--model'   => $this->option('model')
         ]);
-        $this->line('Created: "' . $repository . '" Class');
 
         $this->bind($repository);
     }
 
+
+    /**
+     * @param string $name
+     */
     protected function bind(string $name) {
         $namespace = "App\\{$this->config->get('laravel-organizer.directories.repository', 'Repositories')}";
 
         try {
             $this->organizer->bindRepositoryClassInterface("{$namespace}\\Contracts\\{$name}", "{$namespace}\\{$name}");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Error in binding the repository!');
             $this->error($e->getMessage());
         }

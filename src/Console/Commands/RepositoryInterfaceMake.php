@@ -7,6 +7,10 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Console\GeneratorCommand;
 
+/**
+ * Class RepositoryInterfaceMake
+ * @package WhoJonson\LaravelOrganizer\Console\Commands
+ */
 class RepositoryInterfaceMake extends GeneratorCommand
 {
     /**
@@ -15,11 +19,11 @@ class RepositoryInterfaceMake extends GeneratorCommand
     protected $config;
 
     /**
-     * The console command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'make:repository-interface';
+    protected $signature = 'make:repository-interface {name}';
 
     /**
      * The console command description.
@@ -33,10 +37,16 @@ class RepositoryInterfaceMake extends GeneratorCommand
      *
      * @var string
      */
-    protected $type = 'Repository';
+    protected $type = 'RepositoryInterface';
 
     /**
+     * Indicates whether the command should be shown in the Artisan command list.
      *
+     * @var bool
+     */
+    protected $hidden = true;
+
+    /**
      * @param Filesystem $files
      * @param Config $config
      */
@@ -50,10 +60,10 @@ class RepositoryInterfaceMake extends GeneratorCommand
     /**
      * Prefix default root namespace with a Directory.
      *
-     * @param string $rootNamespace
+     * @param $rootNamespace
      * @return string
      */
-    protected function getDefaultNamespace($rootNamespace): string
+    protected function getDefaultNamespace($rootNamespace) : string
     {
         $namespace = $this->config->get('laravel-organizer.directories.repository', 'Repositories');
         return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}\\Contracts");
@@ -66,6 +76,6 @@ class RepositoryInterfaceMake extends GeneratorCommand
      */
     protected function getStub(): string
     {
-        return __DIR__ . '/../../Stubs/Repository.stub';
+        return __DIR__ . '/../../Stubs/repositoryInterface.stub';
     }
 }
