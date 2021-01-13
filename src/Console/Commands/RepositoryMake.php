@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Config\Repository as Config;
-use WhoJonson\LaravelOrganizer\LaravelOrganizer;
+use WhoJonson\LaravelOrganizer\OrganizerAssistant;
 
 /**
  * Class RepositoryMake
@@ -41,7 +41,7 @@ class RepositoryMake extends Command
     protected $config;
 
     /**
-     * @var LaravelOrganizer
+     * @var OrganizerAssistant
      */
     protected $organizer;
 
@@ -57,7 +57,8 @@ class RepositoryMake extends Command
 
         $this->files = $files;
         $this->config = $config;
-        $this->organizer = new LaravelOrganizer($files, $config);
+
+        $this->organizer = new OrganizerAssistant($this->config);
     }
 
     /**
@@ -77,7 +78,7 @@ class RepositoryMake extends Command
         $this->line('Creating: "' . $repository . '" Class');
         $this->call('make:repository-class', [
             'name'      => $repository,
-            '--model'   => $this->option('model')
+            '--model'   => $this->checkModel()
         ]);
 
         $this->bind($repository);
@@ -96,5 +97,27 @@ class RepositoryMake extends Command
             $this->error('Error in binding the repository!');
             $this->error($e->getMessage());
         }
+    }
+
+
+    /**
+     * @return string|null
+     */
+    protected function checkModel() : ?string
+    {
+        if($model = $this->option('model')) {
+            $namespacedModel = trim($this->laravel->getNamespace(), '\\');
+            $defaultModelNamespace =  trim($this->config->get('laravel-organizer.directories.model', 'Models'), '\\');
+
+            $model = Str::studly($model);
+            $namespacedModel .= "\\{$defaultModelNamespace}\\{$model}";
+            if(!class_exists($namespacedModel)) {
+                $this->call('make:model', [
+                    'name'  => $model
+                ]);
+            }
+            return $model;
+        }
+        return null;
     }
 }

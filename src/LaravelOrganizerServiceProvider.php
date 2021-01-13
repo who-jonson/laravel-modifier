@@ -11,8 +11,7 @@
 
 namespace WhoJonson\LaravelOrganizer;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\ResponseFactory;
+use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use WhoJonson\LaravelOrganizer\Console\Commands\ModelMake;
@@ -56,6 +55,8 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
 
         $this->bindServices();
 
+        $this->app->alias('organizer', Organizer::class);
+
         $this->commands([
             'command.make.model',
             'command.make.repository',
@@ -72,6 +73,7 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
     public function provides() : array
     {
         return [
+            'organizer',
             'command.make.model',
             'command.make.repository'
         ];
@@ -84,30 +86,39 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
      */
     private function bindServices() : void
     {
+        // Bind Organizer Service
+        $this->app->singleton(
+            'organizer',
+            function (Container $app) {
+                return new Organizer($app['files'], $app['config']);
+            }
+        );
+
+        // Bind Command Services
         $this->app->singleton(
             'command.make.model',
-            function ($app) {
+            function (Container $app) {
                 return new ModelMake($app['files'], $app['config']);
             }
         );
 
         $this->app->singleton(
             'command.make.repository',
-            function ($app) {
+            function (Container $app) {
                 return new RepositoryMake($app['files'], $app['config']);
             }
         );
 
         $this->app->singleton(
             'command.make.repository-interface',
-            function ($app) {
+            function (Container $app) {
                 return new RepositoryClassMake($app['files'], $app['config']);
             }
         );
 
         $this->app->singleton(
             'command.make.repository-class',
-            function ($app) {
+            function (Container $app) {
                 return new RepositoryInterfaceMake($app['files'], $app['config']);
             }
         );

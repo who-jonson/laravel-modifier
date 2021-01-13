@@ -11,9 +11,12 @@
 
 namespace WhoJonson\LaravelOrganizer\Exceptions;
 
-
 use Exception;
 
+/**
+ * Abstract Class LaravelOrganizerException
+ * @package WhoJonson\LaravelOrganizer\Exceptions
+ */
 abstract class LaravelOrganizerException extends Exception
 {
     /**

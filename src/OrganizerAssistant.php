@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class LaravelOrganizer
+ * Class OrganizerAssistant
  *
  * @author    Jonson B. <www.jbc.bd@gmail.com>
  * @copyright 2021 Jonson B. (https://who-jonson.github.io)
@@ -13,20 +13,23 @@ namespace WhoJonson\LaravelOrganizer;
 
 use Exception;
 use Illuminate\Support\Str;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Contracts\Config\Repository as Config;
+use WhoJonson\LaravelOrganizer\Exceptions\AppConfigNotFoundException;
+use WhoJonson\LaravelOrganizer\Exceptions\ProvidersNotFoundException;
 
 /**
- * Class LaravelOrganizer
+ * Class OrganizerAssistant
  * @package WhoJonson\LaravelOrganizer
  */
-class LaravelOrganizer
+class OrganizerAssistant
 {
     /**
-     * @var Filesystem
+     * The Laravel framework version.
+     *
+     * @var string
      */
-    protected $files;
+    protected $version;
 
     /**
      * @var Config
@@ -35,15 +38,39 @@ class LaravelOrganizer
 
     /**
      * LaravelOrganizer constructor.
-     * @param Filesystem $files
+     *
      * @param Config $config
+     * @throws Exception
+     */
+    public function __construct(Config $config)
+    {
+        $this->version = app()->version();
+        $this->config = $config;
+
+        $this->setUp();
+    }
+
+    /**
+     * Setup Config
      *
      * @throws Exception
      */
-    public function __construct(Filesystem $files, Config $config)
+    private function setUp()
     {
-        $this->files = $files;
+        if (!$this->config->has('laravel-organizer')) {
+            throw new Exception('Configuration parameters not loaded!');
+        }
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return OrganizerAssistant
+     */
+    public function setConfig(array $config) : OrganizerAssistant
+    {
         $this->config = $config;
+        return $this;
     }
 
     /**
@@ -64,7 +91,7 @@ class LaravelOrganizer
         $contents = file($file);
 
         $appendAt = $this->appendAt($contents, 'public function boot()', '{');
-        if($appendAt >= 0) {
+        if($appendAt > 0) {
             $insert = [
                 '        $this->app->bind(' . "\n",
                 "            '" . $abstract ."',\n",
@@ -86,17 +113,64 @@ class LaravelOrganizer
      * If not exists then create RepositoryServiceProvider class
      *
      * @return string
+     *
+     * @throws AppConfigNotFoundException
+     * @throws ProvidersNotFoundException
      */
     protected function getRepositoryServiceProvider(): string
     {
-        $file = class_exists('App\Providers\RepositoryServiceProvider')
-            ? app_path('Providers/RepositoryServiceProvider.php')
-            : false;
+        $class = 'App\Providers\RepositoryServiceProvider';
 
-        if(!$file || !realpath($file)) {
-            Artisan::call('make:provider RepositoryServiceProvider');
+        if(!class_exists($class)) {
+            Artisan::call('make:provider', [
+                'name'  => 'RepositoryServiceProvider'
+            ]);
+            $this->registerProvider($class);
         }
         return app_path('Providers/RepositoryServiceProvider.php');
+    }
+
+    /**
+     * Add a ServiceProvider in the providers array of application config
+     *
+     * @param string $name
+     *
+     * @throws AppConfigNotFoundException
+     * @throws ProvidersNotFoundException
+     */
+    protected function registerProvider(string $name)
+    {
+        $file = config_path('app.php');
+        if(!file_exists($file)) {
+            throw new AppConfigNotFoundException();
+        }
+
+        $providers = $this->config->get('app.providers');
+        if(!$providers || !is_array($providers)) {
+            throw new ProvidersNotFoundException();
+        }
+
+        if(in_array($name, $providers)) {
+            return;
+        }
+
+        $contents = file($file);
+        $appendAt = $this->appendAt($contents, end($providers));
+
+        if($appendAt > 0) {
+            $index = $appendAt - 1;
+
+            $replace = Str::afterLast($contents[$index], ' ');
+            $replace = Str::beforeLast($replace, '\n');
+
+            $insert[] = "\n";
+            $insert[] = str_replace($replace, "App\Providers\RepositoryServiceProvider::class,\n", $contents[$index]);
+
+            array_splice($contents, $appendAt, 0, $insert);
+            file_put_contents($file, $contents);
+
+            exec('composer dump-autoload');
+        }
     }
 
     /**

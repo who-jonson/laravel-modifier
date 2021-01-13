@@ -4,6 +4,10 @@
 namespace WhoJonson\LaravelOrganizer\Exceptions;
 
 
+/**
+ * Class UndefinedModelException
+ * @package WhoJonson\LaravelOrganizer\Exceptions
+ */
 class UndefinedModelException extends LaravelOrganizerException
 {
 

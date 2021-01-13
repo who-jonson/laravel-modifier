@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facade Organizer
+ * Organizer Facade
  *
  * @author    Jonson B. <www.jbc.bd@gmail.com>
  * @copyright 2021 Jonson B. (https://who-jonson.github.io)
@@ -12,7 +12,6 @@
 namespace WhoJonson\LaravelOrganizer\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use RuntimeException;
 
 /**
  * Class Organizer
