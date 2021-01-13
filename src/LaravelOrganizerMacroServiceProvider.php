@@ -16,6 +16,10 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class LaravelOrganizerMacroServiceProvider
+ * @package WhoJonson\LaravelOrganizer
+ */
 class LaravelOrganizerMacroServiceProvider extends ServiceProvider
 {
     /**

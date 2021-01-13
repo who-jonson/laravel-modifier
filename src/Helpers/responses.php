@@ -15,7 +15,6 @@
  * ====================================================================================
  */
 
-use Throwable;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 

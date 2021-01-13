@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laravel Organizer
+ * Class LaravelOrganizer
  *
  * @author    Jonson B. <www.jbc.bd@gmail.com>
  * @copyright 2021 Jonson B. (https://who-jonson.github.io)
@@ -44,20 +44,6 @@ class LaravelOrganizer
     {
         $this->files = $files;
         $this->config = $config;
-
-        $this->setUp();
-    }
-
-    /**
-     * Setup
-     *
-     * @throws Exception
-     */
-    private function setUp()
-    {
-        if (!$this->config->has('laravel-organizer')) {
-            throw new Exception('Configuration parameters for "Laravel Organizer" are not loaded!');
-        }
     }
 
     /**
