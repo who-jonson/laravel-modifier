@@ -47,7 +47,7 @@
                 "WhoJonson\\LaravelOrganizer\\LaravelOrganizerMacroServiceProvider"
             ],
             "aliases": {
-                "Purifier": "WhoJonson\\LaravelOrganizer\\Facades\\Organizer"
+                "Organizer": "WhoJonson\\LaravelOrganizer\\Facades\\Organizer"
             }
         }
     },
