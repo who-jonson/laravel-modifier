@@ -1,0 +1,20 @@
+<?php
+
+namespace DummyNamespace;
+
+use NamespacedDummyBase;
+use NamespacedDummyInterface as RepositoryInterface;
+
+class DummyClass extends DummyBase implements RepositoryInterface {
+
+    /*
+     * DummyClass constructor
+     * Replace "\Illuminate\Database\Eloquent\Model" with your model Class
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     */
+    public function __construct(\Illuminate\Database\Eloquent\Model $model)
+    {
+        parent::__construct($model);
+    }
+}

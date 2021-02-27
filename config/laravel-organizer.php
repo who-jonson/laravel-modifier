@@ -1,6 +1,9 @@
 <?php
 
 return [
+    /*
+     * Default Directory Structure
+     */
     'directories'   => [
         /*
          * Default NameSpace for Models
@@ -23,5 +26,26 @@ return [
          * then the value should be "Custom\\Repositories"
          */
         'repository' => 'Repositories'
-    ]
+    ],
+
+    /*
+     * Default or Base Class list
+     */
+    'classes' => [
+        /*
+         * Base Repository Class to extend
+         *
+         * If changed,
+         * then the new class must extend "WhoJonson\LaravelOrganizer\Repositories\Repository"
+         */
+        'base_repository' => null,
+
+        /*
+         * Base Repository Interface to implement
+         *
+         * If changed,
+         * then the new class must extend "WhoJonson\LaravelOrganizer\Contracts\Repository"
+         */
+        'base_repository_interface' => null
+    ],
 ];

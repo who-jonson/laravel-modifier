@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Config\Repository as Config;
 use WhoJonson\LaravelOrganizer\OrganizerAssistant;
+use WhoJonson\LaravelOrganizer\Traits\CommandGenerator;
 
 /**
  * Class RepositoryMake
@@ -16,6 +17,8 @@ use WhoJonson\LaravelOrganizer\OrganizerAssistant;
  */
 class RepositoryMake extends Command
 {
+    use CommandGenerator;
+
     /**
      * The console command name.
      *
@@ -46,6 +49,8 @@ class RepositoryMake extends Command
     protected $organizer;
 
     /**
+     * RepositoryMake constructor
+     *
      * @param Filesystem $files
      * @param Config $config
      *

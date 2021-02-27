@@ -32,14 +32,15 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
      */
     public function boot() : void
     {
-        $configPath = __DIR__ . '/../config/laravel-organizer.php';
+        if ($this->app->runningInConsole()) {
+            $publishPath = function_exists('config_path')
+                ? config_path('laravel-organizer.php')
+                : base_path('config/laravel-organizer.php');
 
-        if (function_exists('config_path')) {
-            $publishPath = config_path('laravel-organizer.php');
-        } else {
-            $publishPath = base_path('config/laravel-organizer.php');
+            $this->publishes([
+                __DIR__ . '/../config/laravel-organizer.php' => $publishPath
+            ], 'config');
         }
-        $this->publishes([$configPath => $publishPath], 'config');
     }
 
     /**
@@ -110,14 +111,14 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
         );
 
         $this->app->singleton(
-            'command.make.repository-interface',
+            'command.make.repository-class',
             function (Container $app) {
                 return new RepositoryClassMake($app['files'], $app['config']);
             }
         );
 
         $this->app->singleton(
-            'command.make.repository-class',
+            'command.make.repository-interface',
             function (Container $app) {
                 return new RepositoryInterfaceMake($app['files'], $app['config']);
             }

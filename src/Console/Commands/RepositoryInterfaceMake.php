@@ -4,8 +4,13 @@
 namespace WhoJonson\LaravelOrganizer\Console\Commands;
 
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Str;
+use WhoJonson\LaravelOrganizer\Contracts\Repository;
+use WhoJonson\LaravelOrganizer\Exceptions\InvalidClassException;
+use WhoJonson\LaravelOrganizer\Traits\CommandGenerator;
 
 /**
  * Class RepositoryInterfaceMake
@@ -13,6 +18,8 @@ use Illuminate\Console\GeneratorCommand;
  */
 class RepositoryInterfaceMake extends GeneratorCommand
 {
+    use CommandGenerator;
+
     /**
      * @var Config
      */
@@ -47,11 +54,12 @@ class RepositoryInterfaceMake extends GeneratorCommand
     protected $hidden = true;
 
     /**
+     * RepositoryInterfaceMake constructor
+     *
      * @param Filesystem $files
      * @param Config $config
      */
-    public function __construct(Filesystem $files, Config $config)
-    {
+    public function __construct(Filesystem $files, Config $config) {
         parent::__construct($files);
 
         $this->config = $config;
@@ -63,8 +71,7 @@ class RepositoryInterfaceMake extends GeneratorCommand
      * @param $rootNamespace
      * @return string
      */
-    protected function getDefaultNamespace($rootNamespace) : string
-    {
+    protected function getDefaultNamespace($rootNamespace) : string {
         $namespace = $this->config->get('laravel-organizer.directories.repository', 'Repositories');
         return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}\\Contracts");
     }
@@ -74,8 +81,39 @@ class RepositoryInterfaceMake extends GeneratorCommand
      *
      * @return string
      */
-    protected function getStub(): string
-    {
-        return __DIR__ . '/../../Stubs/repositoryInterface.stub';
+    protected function getStub(): string {
+        return __DIR__ . '/../../Stubs/repository-interface.stub';
+    }
+
+    /**
+     * Build the class with the given name.
+     *
+     * @param $name
+     * @return string
+     *
+     * @throws FileNotFoundException|InvalidClassException
+     */
+    protected function buildClass($name): string {
+        return $this->replaceBaseClass(
+            parent::buildClass($name)
+        );
+    }
+
+    /**
+     * Replace the base repository for the given stub.
+     *
+     * @param string $stub
+     *
+     * @return string
+     * @throws InvalidClassException
+     */
+    protected function replaceBaseClass(string $stub) : string {
+        $className = $this->getBaseNamespacedClass(Repository::class, $this->config->get('laravel-organizer.classes.base_repository_interface'));
+
+        return str_replace(
+            'DummyBase',
+            Str::afterLast($className, '\\'),
+            str_replace('NamespacedDummyBase', $className, $stub)
+        );
     }
 }

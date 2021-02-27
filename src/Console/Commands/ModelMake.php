@@ -6,6 +6,7 @@ namespace WhoJonson\LaravelOrganizer\Console\Commands;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\ModelMakeCommand;
 use Illuminate\Contracts\Config\Repository as Config;
+use WhoJonson\LaravelOrganizer\Traits\CommandGenerator;
 
 /**
  * Class ModelMake
@@ -13,6 +14,8 @@ use Illuminate\Contracts\Config\Repository as Config;
  */
 class ModelMake extends ModelMakeCommand
 {
+    use CommandGenerator;
+
     /**
      * @var Config
      */

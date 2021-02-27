@@ -7,6 +7,10 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Str;
+use WhoJonson\LaravelOrganizer\Exceptions\InvalidClassException;
+use WhoJonson\LaravelOrganizer\Repositories\Repository;
+use WhoJonson\LaravelOrganizer\Traits\CommandGenerator;
 
 /**
  * Class RepositoryClassMake
@@ -14,6 +18,8 @@ use Illuminate\Console\GeneratorCommand;
  */
 class RepositoryClassMake extends GeneratorCommand
 {
+    use CommandGenerator;
+
     /**
      * The name and signature of the console command.
      *
@@ -49,6 +55,8 @@ class RepositoryClassMake extends GeneratorCommand
     protected $config;
 
     /**
+     * RepositoryClassMake constructor
+     *
      * @param Filesystem $files
      * @param Config $config
      */
@@ -79,13 +87,15 @@ class RepositoryClassMake extends GeneratorCommand
      * @param $name
      * @return string
      *
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException|InvalidClassException
      */
     protected function buildClass($name): string
     {
         $stub = $this->replaceInterface(
             parent::buildClass($name)
         );
+        $stub = $this->replaceBaseClass($stub);
+
         $model = $this->option('model');
 
         return $model ? $this->replaceModel($stub, $model) : $stub;
@@ -121,6 +131,25 @@ class RepositoryClassMake extends GeneratorCommand
 
         $stub = str_replace('NamespacedDummyModel', $namespacedModel, $stub);
         return str_replace('DummyModel', $model, $stub);
+    }
+
+
+    /**
+     * Replace the base repository for the given stub.
+     *
+     * @param string $stub
+     *
+     * @return string
+     * @throws InvalidClassException
+     */
+    protected function replaceBaseClass(string $stub) : string {
+        $className = $this->getBaseNamespacedClass(Repository::class, $this->config->get('laravel-organizer.classes.base_repository'));
+
+        return str_replace(
+            'DummyBase',
+            Str::afterLast($className, '\\'),
+            str_replace('NamespacedDummyBase', $className, $stub)
+        );
     }
 
     /**
