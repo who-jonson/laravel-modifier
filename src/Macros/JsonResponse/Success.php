@@ -29,13 +29,11 @@ class Success
         return function ($data = [], string $message = null, array $headers = []) : JsonResponse
         {
             $response = [
+                'data'    => $data,
                 'success' => true,
                 'message' => $message ?: 'Request processed successfully'
             ];
 
-            if ($data) {
-                $response['data'] = $data;
-            }
             return new JsonResponse($response, Response::HTTP_OK, $headers);
         };
     }
