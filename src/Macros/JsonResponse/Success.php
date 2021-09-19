@@ -33,9 +33,6 @@ class Success
                 'message' => $message ?: 'Request processed successfully'
             ];
 
-            if ($data) {
-                $response['data'] = $data;
-            }
             return new JsonResponse($response, Response::HTTP_OK, $headers);
         };
     }
