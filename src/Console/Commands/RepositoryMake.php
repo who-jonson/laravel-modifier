@@ -89,10 +89,11 @@ class RepositoryMake extends Command
      * @param string $name
      */
     protected function bind(string $name) {
-        $namespace = "App\\{$this->config->get('laravel-organizer.directories.repository', 'Repositories')}";
+        $concrete = "App\\{$this->config->get('laravel-organizer.directories.repository')}";
+        $abstract = "App\\{$this->config->get('laravel-organizer.directories.interface')}";
 
         try {
-            $this->organizer->bindRepositoryClassInterface("{$namespace}\\Contracts\\{$name}", "{$namespace}\\{$name}");
+            $this->organizer->bindRepositoryClassInterface("{$abstract}\\{$name}", "{$concrete}\\{$name}");
         } catch (Exception $e) {
             $this->error('Error in binding the repository!');
             $this->error($e->getMessage());
