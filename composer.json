@@ -1,6 +1,6 @@
 {
     "name": "who-jonson/laravel-organizer",
-    "description": "An efficacious Organizer for Laravel 6/7/8 structure with artisan commands",
+    "description": "An efficacious Organizer for Laravel 6/7/8/9 structure with artisan commands",
     "keywords": ["laravel", "organizer", "custom laravel", "cli", "artisan", "command", "composer-package", "console", "repository make command", "repository injection"],
     "homepage": "https://github.com/who-jonson/laravel-organizer",
     "type": "package",
