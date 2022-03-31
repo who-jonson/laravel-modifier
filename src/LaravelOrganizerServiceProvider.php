@@ -15,6 +15,7 @@ use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use WhoJonson\LaravelOrganizer\Console\Commands\ModelMake;
+use WhoJonson\LaravelOrganizer\Console\Commands\ProviderMake;
 use WhoJonson\LaravelOrganizer\Console\Commands\RepositoryClassMake;
 use WhoJonson\LaravelOrganizer\Console\Commands\RepositoryInterfaceMake;
 use WhoJonson\LaravelOrganizer\Console\Commands\RepositoryMake;
@@ -58,6 +59,7 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
         $this->app->alias('organizer', Organizer::class);
 
         $commands = [
+            'command.make.provider',
             'command.make.repository',
             'command.make.repository-class',
             'command.make.repository-interface'
@@ -66,7 +68,7 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
         if (!$this->isVersion9()) {
             array_unshift($commands, 'command.make.model');
         }
-        
+
         $this->commands($commands);
     }
 
@@ -79,10 +81,12 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
     {
         return $this->isVersion9() ? [
             'organizer',
+            'command.make.provider',
             'command.make.repository'
         ] : [
             'organizer',
             'command.make.model',
+            'command.make.provider',
             'command.make.repository'
         ];
     }
@@ -113,6 +117,13 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
         }
 
         $this->app->singleton(
+            'command.make.provider',
+            function (Container $app) {
+                return new ProviderMake($app['files']);
+            }
+        );
+
+        $this->app->singleton(
             'command.make.repository',
             function (Container $app) {
                 return new RepositoryMake($app['files'], $app['config']);
@@ -133,7 +144,7 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
             }
         );
     }
-    
+
     protected function isVersion9 () : bool {
         return str_starts_with($this->app->version(), '9');
     }
