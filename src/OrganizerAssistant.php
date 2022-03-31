@@ -119,11 +119,10 @@ class OrganizerAssistant
      */
     protected function getRepositoryServiceProvider(): string
     {
-        $class = 'App\Providers\RepositoryServiceProvider';
-
-        if(!class_exists($class)) {
+        if(!class_exists($class = 'App\Providers\RepositoryServiceProvider')) {
             Artisan::call('make:provider', [
-                'name'  => 'RepositoryServiceProvider'
+                'name'        => 'RepositoryServiceProvider',
+                '--organizer' => true
             ]);
             $this->registerProvider($class);
         }
