@@ -22,6 +22,11 @@ return [
          * OR to keep your Repositories in "app/Custom/Repositories" directory as Namespaced "App\Custom\Repositories"
          * then the value should be "Custom\\Repositories"
          */
-        'repository' => 'Repositories'
+        'repository' => 'Repositories',
+
+        /*
+         * Default NameSpace for Repository Interfaces
+         */
+        'interface' => 'Repositories\\Contracts'
     ]
 ];
