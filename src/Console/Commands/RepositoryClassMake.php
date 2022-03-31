@@ -99,8 +99,9 @@ class RepositoryClassMake extends GeneratorCommand
      */
     protected function replaceInterface(string $stub) : string
     {
-        $namespace = $this->getDefaultNamespace(trim($this->rootNamespace(), '\\'));
-        return str_replace('NamespacedDummyInterface', "{$namespace}\\Contracts\\{$this->getNameInput()}", $stub);
+        $namespace = trim($this->rootNamespace(), '\\') . '\\';
+        $namespace .= $this->config->get('laravel-organizer.directories.interface', 'Repositories\\Contracts');
+        return str_replace('NamespacedDummyInterface', "{$namespace}\\{$this->getNameInput()}", $stub);
     }
 
     /**
