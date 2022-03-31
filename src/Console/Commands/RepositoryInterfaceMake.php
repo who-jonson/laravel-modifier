@@ -65,8 +65,8 @@ class RepositoryInterfaceMake extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace) : string
     {
-        $namespace = $this->config->get('laravel-organizer.directories.repository', 'Repositories');
-        return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}\\Contracts");
+        $namespace = $this->config->get('laravel-organizer.directories.interface', 'Repositories\\Contracts');
+        return parent::getDefaultNamespace("{$rootNamespace}\\{$namespace}");
     }
 
     /**
