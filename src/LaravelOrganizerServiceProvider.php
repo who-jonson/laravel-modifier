@@ -57,12 +57,17 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
 
         $this->app->alias('organizer', Organizer::class);
 
-        $this->commands([
-            'command.make.model',
+        $commands = [
             'command.make.repository',
             'command.make.repository-class',
             'command.make.repository-interface'
-        ]);
+        ];
+
+        if (!$this->isVersion9()) {
+            array_unshift($commands, 'command.make.model');
+        }
+        
+        $this->commands($commands);
     }
 
     /**
@@ -72,7 +77,10 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
      */
     public function provides() : array
     {
-        return [
+        return $this->isVersion9() ? [
+            'organizer',
+            'command.make.repository'
+        ] : [
             'organizer',
             'command.make.model',
             'command.make.repository'
@@ -95,12 +103,14 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
         );
 
         // Bind Command Services
-        $this->app->singleton(
-            'command.make.model',
-            function (Container $app) {
-                return new ModelMake($app['files'], $app['config']);
-            }
-        );
+        if (!$this->isVersion9()) {
+            $this->app->singleton(
+                'command.make.model',
+                function (Container $app) {
+                    return new ModelMake($app['files'], $app['config']);
+                }
+            );
+        }
 
         $this->app->singleton(
             'command.make.repository',
@@ -122,5 +132,9 @@ class LaravelOrganizerServiceProvider extends ServiceProvider implements Deferra
                 return new RepositoryInterfaceMake($app['files'], $app['config']);
             }
         );
+    }
+    
+    protected function isVersion9 () : bool {
+        return str_starts_with($this->app->version(), '9');
     }
 }
