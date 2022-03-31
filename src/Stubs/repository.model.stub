@@ -2,12 +2,15 @@
 
 namespace DummyNamespace;
 
+use NamespacedDummyModel;
 use WhoJonson\LaravelOrganizer\Repositories\Repository;
 use NamespacedDummyInterface as RepositoryInterface;
-use NamespacedDummyModel;
 
 class DummyClass extends Repository implements RepositoryInterface {
 
+    /**
+     * @param DummyModel $model
+     */
     public function __construct(DummyModel $model)
     {
         parent::__construct($model);
