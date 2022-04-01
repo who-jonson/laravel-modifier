@@ -27,7 +27,7 @@ class OrganizerAssistant
     /**
      * The Laravel framework version.
      *
-     * @var string
+     * @var int
      */
     protected $version;
 
@@ -44,7 +44,7 @@ class OrganizerAssistant
      */
     public function __construct(Config $config)
     {
-        $this->version = app()->version();
+        $this->version = (int) \Str::before(app()->version(), '.');
         $this->config = $config;
 
         $this->setUp();
@@ -88,13 +88,52 @@ class OrganizerAssistant
             throw new Exception('"' . $concrete . '" not found!');
         }
         $file = $this->getRepositoryServiceProvider();
-        $contents = file($file);
 
+        if ($this->config->get('laravel-organizer.register_on_boot', $this->version < 9)) {
+            return $this->registerBindingsOnBoot($file, $abstract, $concrete);
+        }
+        return $this->registerBindings($file, $abstract, $concrete);
+    }
+
+    /**
+     * @param string $file
+     * @param string $abstract
+     * @param string $concrete
+     *
+     * @return bool
+     */
+    protected function registerBindings(string $file, string $abstract, string $concrete) : bool
+    {
+        $contents = file($file);
+        $appendAt = $this->appendAt($contents, 'public $bindings =');
+        if($appendAt > 0) {
+            $insert = [
+                "        \\{$abstract}::class => \\{$concrete}::class,\n"
+            ];
+
+            array_splice($contents, $appendAt, 0, $insert);
+            file_put_contents($file, $contents);
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param string $file
+     * @param string $abstract
+     * @param string $concrete
+     *
+     * @return bool
+     */
+    protected function registerBindingsOnBoot(string $file, string $abstract, string $concrete) : bool
+    {
+        $contents = file($file);
         $appendAt = $this->appendAt($contents, 'public function boot()', '{');
         if($appendAt > 0) {
             $insert = [
                 '        $this->app->bind(' . "\n",
-                "            '" . $abstract ."',\n",
+                "            '" . $abstract . "',\n",
                 "            '" . $concrete . "'\n",
                 '        );' . "\n"
             ];
